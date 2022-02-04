@@ -3,7 +3,7 @@ require 'sinatra'
 require 'socket'
 
 set :bind, '0.0.0.0'
-set :port, 80
+set :port, 1080
 
 post '/' do
     # Simulate a bit of delay
