@@ -17,6 +17,10 @@ require_cmd gem
 require_cmd python3
 require_cmd ruby
 require_cmd node
+require_cmd shellcheck
+
+# self health check
+shellcheck "$(basename "$0")"
 
 # set up worker
 (
@@ -41,3 +45,45 @@ require_cmd node
   cd hasher
   gem install sinatra
 )
+
+# install redis for service
+sudo yum install -y redis
+sudo systemctl start redis.service
+
+sudo tee -a /etc/hosts <<'EOL' >/dev/null
+# dockercoin
+127.0.0.1 rng
+127.0.0.1 hasher
+127.0.0.1 redis
+EOL
+
+# hasher deploy
+{
+  cd hasher
+  ruby hasher.rb &
+  cd ..
+}
+
+# rng deploy
+{
+  cd rng
+  python3 rng.py &
+  cd ..
+}
+
+# webui deploy
+{
+  cd webui
+  node webui.js &
+  cd ..
+}
+
+# worker deploy
+{
+  cd worker
+  python3 worker.py &
+  cd ..
+}
+
+# wait for all to finish
+wait
