@@ -1,0 +1,23 @@
+set -ev
+
+pip3 install redis flask requests
+
+npm install express redis@3.1.2
+
+gem install sinatra
+
+sudo yum install -y redis
+sudo systemctl start redis.service
+
+sudo tee -a /etc/hosts <<'EOL' >/dev/null
+# dockercoin
+127.0.0.1 rng
+127.0.0.1 hasher
+127.0.0.1 redis
+EOL
+
+ruby hasher/hasher.rb &
+python3 rng/rng.py &
+python3 worker/worker.py &
+cd webui
+node webui.js &
