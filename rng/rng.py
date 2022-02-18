@@ -28,5 +28,5 @@ def rng(how_many_bytes):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=2080)
+    app.run(host="localhost", port=2080)
 
