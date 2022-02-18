@@ -6,7 +6,7 @@ To run in cloud9:
 git clone https://github.com/anonyco/dockercoins
 cd dockercoins
 git checkout anonyco
-./deploy-cloud9
+source ./deploy-cloud9
 ```
 
 To run anywhere in the Linuxverse:
