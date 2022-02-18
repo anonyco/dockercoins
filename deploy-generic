@@ -1,0 +1,89 @@
+#!/bin/sh
+
+set -ev
+
+cd "$(dirname "$(readlink -f "$0" || realpath "$0")")"
+
+require_cmd() {
+  if ! command -v "$1" >/dev/null 2>&1; then
+    echo 'You must install the package needed to provide the '"$1"' command to continue'
+    exit 1
+  fi
+}
+
+require_cmd pip3
+require_cmd npm
+require_cmd gem
+require_cmd python3
+require_cmd ruby
+require_cmd node
+require_cmd shellcheck
+
+# self health check
+shellcheck "$(basename "$0")"
+
+# set up worker
+(
+  cd worker
+  pip3 install redis flask requests
+)
+
+# set up webui
+(
+  cd webui
+  npm install express redis@3.1.2
+)
+
+# set up rng
+(
+  cd rng
+  pip3 install redis flask requests
+)
+
+# setup hasher
+(
+  cd hasher
+  gem install sinatra
+)
+
+# install redis for service
+sudo yum install -y redis
+sudo systemctl start redis.service
+
+sudo tee -a /etc/hosts <<'EOL' >/dev/null
+# dockercoin
+127.0.0.1 rng
+127.0.0.1 hasher
+127.0.0.1 redis
+EOL
+
+# hasher deploy
+{
+  cd hasher
+  ruby hasher.rb &
+  cd ..
+}
+
+# rng deploy
+{
+  cd rng
+  python3 rng.py &
+  cd ..
+}
+
+# webui deploy
+{
+  cd webui
+  node webui.js &
+  cd ..
+}
+
+# worker deploy
+{
+  cd worker
+  python3 worker.py &
+  cd ..
+}
+
+# wait for all to finish
+wait
