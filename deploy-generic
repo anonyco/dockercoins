@@ -22,6 +22,12 @@ require_cmd shellcheck
 # self health check
 shellcheck "$(basename "$0")"
 
+# ensure all children killed upon exit
+kill_all_children() {
+  eval 'kill $''(ps -s $$ -o pid=)'
+}
+trap 'kill_all_children' EXIT INT TERM
+
 # set up worker
 (
   cd worker
