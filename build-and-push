@@ -1,0 +1,16 @@
+#!/bin/sh
+
+docker login -u jackanonyco
+
+for app in hasher redis rng webui worker; do docker build -t jackanonyco/dockercoins-$app $app ; done
+
+for app in hasher redis rng webui worker; do docker push jackanonyco/dockercoins-$app ; done
+
+#for app in hasher redis rng webui worker; do
+#  (
+#    docker build -t jackanonyco/dockercoins-$app $app
+#    docker push jackanonyco/dockercoins-$app
+#  ) &
+#done
+#
+#wait
