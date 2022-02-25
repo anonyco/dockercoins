@@ -33,9 +33,10 @@ services:
       - hasher
     secrets:
       - 
-        mode: 0404
+        mode: 0400
         source: hasher
         target: /hasher/hasher.rb
+        uid: 65534
     user: nobody
     working_dir: /hasher/
   redis:
@@ -68,9 +69,10 @@ services:
       - rng
     secrets:
       - 
-        mode: 0404
+        mode: 0400
         source: rng
         target: /rng/rng.py
+        uid: 65534
     user: nobody
     working_dir: /rng/
   webui:
@@ -87,9 +89,10 @@ services:
       - 8080:8080
     secrets:
       - 
-        mode: 0404
+        mode: 0400
         source: webui
         target: /webui/webui.js
+        uid: 65534
     user: nobody
     working_dir: /webui/
   worker:
@@ -106,9 +109,10 @@ services:
       - redis
     secrets:
       - 
-        mode: 0404
+        mode: 0400
         source: worker
         target: /worker/worker.py
+        uid: 65534
     user: nobody
     working_dir: /worker/
 
