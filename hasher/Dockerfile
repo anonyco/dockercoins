@@ -1,4 +1,4 @@
-FROM ruby:alpine-1.15
+FROM ruby:alpine3.15
 
 RUN gem install sinatra
 
