@@ -20,4 +20,18 @@ git checkout anonyco
 
 Use `./deploy-cloud9` if in that environment to autoinstall needed packages without manual intervention.
 
+To build and upload:
+
+```sh
+./build-and-push
+```
+
+To run/deploy:
+
+```sh
+docker swarm init
+docker stack deploy --compose-file docker-compose.yaml DOCKERCOINS
+```
+
+
 
