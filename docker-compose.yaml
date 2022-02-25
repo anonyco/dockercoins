@@ -1,0 +1,116 @@
+networks: 
+  hasher:
+    internal: true
+  redis:
+    internal: true
+  rng:
+    internal: true
+
+secrets: 
+  hasher:
+    file: ./hasher/hasher.rb
+  rng:
+    file: ./rng/rng.py
+  webui:
+    file: ./webui/webui.js
+  worker:
+    file: ./worker/worker.py
+
+services: 
+  hasher:
+    command:
+      - hasher.rb
+    entrypoint:
+      - ruby
+    environment:
+      - LANG=C.UTF-8
+      - GEM_HOME=/usr/local/bundle
+      - BUNDLE_SILENCE_ROOT_WARNING=1
+      - BUNDLE_APP_CONFIG=/usr/local/bundle
+      - PATH=/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    image: jackanonyco/dockercoins-hasher
+    networks:
+      - hasher
+    secrets:
+      - 
+        mode: 0400
+        source: hasher
+        target: /hasher/hasher.rb
+    user: nobody
+    working_dir: /hasher/
+  redis:
+    command: 
+      - redis-server
+    entrypoint:
+      - docker-entrypoint.sh
+    environment:
+      - LANG=C.UTF-8
+    image: jackanonyco/dockercoins-redis
+    networks:
+      - redis
+    user: redis
+    volumes:
+      -
+        read_only: false
+        source: redis
+        target: /data/
+        type: volume
+    working_dir: /data/
+  rng:
+    command:
+      - rng.py
+    entrypoint:
+      - python3
+    environment:
+      - LANG=C.UTF-8
+    image: jackanonyco/dockercoins-rng
+    networks:
+      - rng
+    secrets:
+      - 
+        mode: 0400
+        source: rng
+        target: /rng/rng.py
+    user: nobody
+    working_dir: /rng/
+  webui:
+    command:
+      - webui.js
+    entrypoint:
+      - node
+    environment:
+      - LANG=C.UTF-8
+    image: jackanonyco/dockercoins-webui
+    networks: 
+      - redis
+    secrets:
+      - 
+        mode: 0400
+        source: webui
+        target: /webui/webui.js
+    user: nobody
+    working_dir: /webui/
+  worker:
+    command:
+      - worker.py
+    entrypoint:
+      - python3
+    environment:
+      - LANG=C.UTF-8
+    image: jackanonyco/dockercoins-worker
+    networks:
+      - rng
+      - hasher
+      - redis
+    secrets:
+      - 
+        mode: 0400
+        source: worker
+        target: /worker/worker.py
+    user: nobody
+    working_dir: /worker/
+
+version: '3.9'
+
+volumes:
+  redis:
