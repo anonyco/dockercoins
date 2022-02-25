@@ -29,9 +29,10 @@ To build and upload:
 To run/deploy:
 
 ```sh
-docker swarm init
-docker stack deploy --compose-file docker-compose.yaml DOCKERCOINS
+sudo docker swarm init
+sudo docker stack deploy --compose-file docker-compose.yaml DOCKERCOINS
 ```
 
+To take down: `docker stack rm DOCKERCOINS`
 
 
