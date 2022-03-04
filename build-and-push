@@ -1,16 +1,29 @@
 #!/bin/sh
 
-#docker login -u jackanonyco
+cd "$(dirname "$(realpath "$0" 2>/dev/null || readlink -f "$0")")"
 
-for app in hasher redis rng webui worker; do docker build -t jackanonyco/dockercoins-$app $app ; done
+#BOOTSTRAP_PATH="$(cd ../.. && pwd)"
 
-for app in hasher redis rng webui worker; do docker push jackanonyco/dockercoins-$app ; done
+#if test -x "$BOOTSTRAP_PATH/bootstrap"; then
+#  . "$BOOTSTRAP_PATH/bootstrap"
+#fi
 
-#for app in hasher redis rng webui worker; do
-#  (
-#    docker build -t jackanonyco/dockercoins-$app $app
-#    docker push jackanonyco/dockercoins-$app
-#  ) &
-#done
-#
-#wait
+if docker system info | grep -E 'Username' >/dev/nul 2>&1 ; then
+  echo 'Already logged into docker hub'
+else
+  echo 'Need to log into docker hub as jackanonyco to push jackanonyco/dockercoins-* images'
+  docker login -u jackanonyco
+fi
+
+#for app in hasher redis rng webui worker; do docker build -t jackanonyco/dockercoins-$app $app ; done
+
+#for app in hasher redis rng webui worker; do docker push jackanonyco/dockercoins-$app ; done
+
+for app in hasher redis rng webui worker; do
+  (
+    docker build -t "jackanonyco/dockercoins-$app" "$app"
+    docker push "jackanonyco/dockercoins-$app"
+  ) &
+done
+
+wait

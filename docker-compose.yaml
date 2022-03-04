@@ -18,6 +18,7 @@ secrets:
 
 services: 
   hasher:
+    hostname: hasher
     command:
       - hasher.rb
     entrypoint:
@@ -36,10 +37,11 @@ services:
         mode: 0400
         source: hasher
         target: /hasher/hasher.rb
-        uid: 65534
+        uid: "65534"
     user: nobody
     working_dir: /hasher/
   redis:
+    hostname: redis
     command: 
       - redis-server
     entrypoint:
@@ -58,6 +60,7 @@ services:
         type: volume
     working_dir: /data/
   rng:
+    hostname: rng
     command:
       - rng.py
     entrypoint:
@@ -72,7 +75,7 @@ services:
         mode: 0400
         source: rng
         target: /rng/rng.py
-        uid: 65534
+        uid: "65534"
     user: nobody
     working_dir: /rng/
   webui:
@@ -92,7 +95,7 @@ services:
         mode: 0400
         source: webui
         target: /webui/webui.js
-        uid: 65534
+        uid: "65534"
     user: nobody
     working_dir: /webui/
   worker:
@@ -112,7 +115,7 @@ services:
         mode: 0400
         source: worker
         target: /worker/worker.py
-        uid: 65534
+        uid: "65534"
     user: nobody
     working_dir: /worker/
 
