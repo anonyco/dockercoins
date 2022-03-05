@@ -35,4 +35,24 @@ sudo docker stack deploy --compose-file docker-compose.yaml DOCKERCOINS
 
 To take down: `docker stack rm DOCKERCOINS`
 
+# Testing commands:
+
+Test hasher:
+
+```sh
+docker run --rm --name hasher --network hasher -v "$PWD/hasher/hasher.rb:/hasher.rb" -p 8080:8080 -e HASHER_PORT=8080 --entrypoint ruby jackanonyco/dockercoins-hasher /hasher.rb
+```
+
+To nuke everything:
+
+```sh
+docker rm -f "$(docker ps -q)"
+docker rmi -f "$(docker images -q)"
+```
+
+# iptables
+
+1. List: `sudo iptables -S` (better yet, `sudo iptables -S -t nat`)
+2. Refresh (clear out session): `sudo iptables -t nat -F` and `sudo systemctl restart docker.service`
+
 
