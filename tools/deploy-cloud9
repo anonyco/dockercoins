@@ -1,4 +1,4 @@
-set -ev
+#set -ev
 
 pip3 install redis Flask requests
 
@@ -6,7 +6,9 @@ npm install express redis@3.1.2
 
 gem install sinatra
 
-sudo yum install -y redis
+if command -v yum >/dev/null 2>&1; then
+  sudo yum install -y redis
+fi
 sudo systemctl start redis.service
 
 sudo tee -a /etc/hosts <<'EOL' >/dev/null

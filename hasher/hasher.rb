@@ -2,8 +2,13 @@ require 'digest'
 require 'sinatra'
 require 'socket'
 
-set :bind, '0.0.0.0'
-set :port, 1080
+# Based upon https://stackoverflow.com/a/10332716/5601591
+def try_to_i(str, default = nil)
+  str =~ /^\d+$/ ? str.to_i : default
+end
+
+set :bind, (ENV["HASHER_ADDR"] || 'hasher')
+set :port, try_to_i(ENV["HASHER_PORT"] || '', 1080)
 
 post '/' do
     # Simulate a bit of delay

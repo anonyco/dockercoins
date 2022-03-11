@@ -15,10 +15,11 @@ secrets:
     file: ./webui/webui.js
   worker:
     file: ./worker/worker.py
+  redis:
+    file: ./redis/redis.conf
 
 services: 
   hasher:
-    hostname: hasher
     command:
       - hasher.rb
     entrypoint:
@@ -29,7 +30,10 @@ services:
       - BUNDLE_SILENCE_ROOT_WARNING=1
       - BUNDLE_APP_CONFIG=/usr/local/bundle
       - PATH=/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-    image: jackanonyco/dockercoins-hasher
+    env_file:
+      - ./network-config.env
+    hostname: hasher
+    image: "${DOCKER_REPO_BASE}/dockercoins-hasher"
     networks:
       - hasher
     secrets:
@@ -37,20 +41,33 @@ services:
         mode: 0400
         source: hasher
         target: /hasher/hasher.rb
-        uid: "65534"
+        uid: "${NOBODY_UID}"
     user: nobody
     working_dir: /hasher/
   redis:
-    hostname: redis
     command: 
       - redis-server
+      - /etc/redis.conf
+      - --port
+      - "${REDIS_PORT}"
+      - --bind
+      - "${REDIS_ADDR}"
     entrypoint:
       - docker-entrypoint.sh
     environment:
       - LANG=C.UTF-8
-    image: jackanonyco/dockercoins-redis
+    env_file:
+      - ./network-config.env
+    hostname: redis
+    image: "${DOCKER_REPO_BASE}/dockercoins-redis"
     networks:
       - redis
+    secrets:
+      - 
+        mode: 0400
+        source: redis
+        target: /etc/redis.conf
+        uid: "${REDIS_UID}"
     user: redis
     volumes:
       -
@@ -60,14 +77,16 @@ services:
         type: volume
     working_dir: /data/
   rng:
-    hostname: rng
     command:
       - rng.py
     entrypoint:
       - python3
     environment:
       - LANG=C.UTF-8
-    image: jackanonyco/dockercoins-rng
+    env_file:
+      - ./network-config.env
+    hostname: rng
+    image: "${DOCKER_REPO_BASE}/dockercoins-rng"
     networks:
       - rng
     secrets:
@@ -75,7 +94,7 @@ services:
         mode: 0400
         source: rng
         target: /rng/rng.py
-        uid: "65534"
+        uid: "${NOBODY_UID}"
     user: nobody
     working_dir: /rng/
   webui:
@@ -85,7 +104,9 @@ services:
       - node
     environment:
       - LANG=C.UTF-8
-    image: jackanonyco/dockercoins-webui
+    env_file:
+      - ./network-config.env
+    image: "${DOCKER_REPO_BASE}/dockercoins-webui"
     networks: 
       - redis
     ports:
@@ -95,7 +116,7 @@ services:
         mode: 0400
         source: webui
         target: /webui/webui.js
-        uid: "65534"
+        uid: "${NOBODY_UID}"
     user: nobody
     working_dir: /webui/
   worker:
@@ -105,7 +126,9 @@ services:
       - python3
     environment:
       - LANG=C.UTF-8
-    image: jackanonyco/dockercoins-worker
+    env_file:
+      - ./network-config.env
+    image: "${DOCKER_REPO_BASE}/dockercoins-worker"
     networks:
       - rng
       - hasher
@@ -115,7 +138,7 @@ services:
         mode: 0400
         source: worker
         target: /worker/worker.py
-        uid: "65534"
+        uid: "${NOBODY_UID}"
     user: nobody
     working_dir: /worker/
 

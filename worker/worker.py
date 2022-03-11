@@ -13,17 +13,41 @@ else:
     logging.basicConfig(level=logging.INFO)
     logging.getLogger("requests").setLevel(logging.WARNING)
 
+rng_port=2080
+try:
+    rng_port = int( os.environ["RNG_PORT"] )
+except:
+    pass
+
+rng_addr="rng"
+try:
+    rng_addr = os.environ["RNG_ADDR"]
+except:
+    pass
+
+hasher_port=1080
+try:
+    hasher_port = int( os.environ["HASHER_PORT"] )
+except:
+    pass
+
+hasher_addr="hasher"
+try:
+    hasher_addr = os.environ["HASHER_ADDR"]
+except:
+    pass
+
 
 redis = Redis("redis")
 
 
 def get_random_bytes():
-    r = requests.get("http://rng:2080/32")
+    r = requests.get("http://" + rng_addr + ":" + str(rng_port) + "/32")
     return r.content
 
 
 def hash_bytes(data):
-    r = requests.post("http://hasher:1080/",
+    r = requests.post("http://" + hasher_addr + ":" + str(hasher_port) + "/",
                       data=data,
                       headers={"Content-Type": "application/octet-stream"})
     hex_hash = r.text

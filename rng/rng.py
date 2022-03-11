@@ -12,6 +12,17 @@ hostname = socket.gethostname()
 
 urandom = os.open("/dev/urandom", os.O_RDONLY)
 
+port=2080
+try:
+    port = int( os.environ["RNG_PORT"] )
+except:
+    pass
+
+addr="rng"
+try:
+    addr = os.environ["RNG_ADDR"]
+except:
+    pass
 
 @app.route("/")
 def index():
@@ -28,5 +39,5 @@ def rng(how_many_bytes):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=2080)
+    app.run(host=addr, port=port)
 
